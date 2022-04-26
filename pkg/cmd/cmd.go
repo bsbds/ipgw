@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/neucn/ipgw/pkg/console"
 	"github.com/neucn/ipgw/pkg/handler"
@@ -45,6 +46,11 @@ var (
 				Aliases: []string{"f"},
 				Usage:   "load configuration from specific `file`",
 			},
+			&cli.StringFlag{
+				Name:    "fwmark",
+				Aliases: []string{"m"},
+				Usage:   "set SO_MARK socket option",
+			},
 		},
 		OnUsageError: onUsageError,
 	}
@@ -62,8 +68,15 @@ func loginUseDefaultAccount(ctx *cli.Context) error {
 	}
 	console.InfoF("using account '%s'\n", account.Username)
 	account.Secret = ctx.String("secret")
-
-	if err = login(handler.NewIpgwHandler(), account); err != nil {
+	mark := uint32(0)
+	if c := ctx.String("fwmark"); c != "" {
+		num, err := strconv.ParseUint(c, 10, 32)
+		if err != nil {
+			return err
+		}
+		mark = uint32(num)
+	}
+	if err = login(handler.NewIpgwHandler(mark), account); err != nil {
 		return fmt.Errorf("login failed: \n\t%v", err)
 	}
 	return nil

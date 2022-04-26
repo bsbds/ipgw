@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"strconv"
+
 	"github.com/neucn/ipgw/pkg/console"
 	"github.com/neucn/ipgw/pkg/handler"
 	"github.com/urfave/cli/v2"
@@ -39,7 +41,15 @@ var (
 			if err != nil {
 				return err
 			}
-			h := handler.NewIpgwHandler()
+			mark := uint32(0)
+			if c := ctx.String("fwmark"); c != "" {
+				num, err := strconv.ParseUint(c, 10, 32)
+				if err != nil {
+					return err
+				}
+				mark = uint32(num)
+			}
+			h := handler.NewIpgwHandler(mark)
 			password, err := account.GetPassword()
 			if err != nil {
 				return err

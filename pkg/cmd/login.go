@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/neucn/ipgw/pkg/console"
 	"github.com/neucn/ipgw/pkg/handler"
@@ -46,7 +47,15 @@ var (
 			if err != nil {
 				return err
 			}
-			h := handler.NewIpgwHandler()
+			mark := uint32(0)
+			if c := ctx.String("fwmark"); c != "" {
+				num, err := strconv.ParseUint(c, 10, 32)
+				if err != nil {
+					return err
+				}
+				mark = uint32(num)
+			}
+			h := handler.NewIpgwHandler(mark)
 			if err = login(h, account); err != nil {
 				return fmt.Errorf("login failed: \n\t%v", err)
 			}

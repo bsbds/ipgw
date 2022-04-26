@@ -19,28 +19,6 @@ var (
 	once sync.Once
 )
 
-type IpgwHandler struct {
-	info    *model.Info
-	client  *http.Client
-	oriInfo map[string]interface{}
-}
-
-func (h *IpgwHandler) GetInfo() *model.Info {
-	return h.info
-}
-
-func (h *IpgwHandler) GetClient() *http.Client {
-	return h.client
-}
-
-func NewIpgwHandler() *IpgwHandler {
-	return &IpgwHandler{
-		info:    &model.Info{},
-		client:  neugo.NewSession(),
-		oriInfo: make(map[string]interface{}),
-	}
-}
-
 func (h *IpgwHandler) Login(account *model.Account) error {
 	var (
 		password string
