@@ -47,6 +47,14 @@ func (h *IpgwHandler) Login(account *model.Account) error {
 		body     string
 		err      error
 	)
+
+	// Workaround for issue #48
+	resp, err := h.client.Get("http://detectportal.firefox.com")
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
 	if account.Cookie != "" {
 		body, err = h.loginCookie(account.Cookie) // 通过cookie登录
 	} else {
